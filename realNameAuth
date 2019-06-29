@@ -1,0 +1,40 @@
+/**
+身份证校验
+*/
+func CheckIdCard(idNum string) bool {
+	if len(idNum) != 18 {
+		return false
+	}
+
+	// 取出本体码
+	idNumBase := idNum[0:17]
+
+	// 取出校验码
+	verifyCode := idNum[17:]
+
+	// 加权因子
+	factor := []int32{7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2}
+
+	// 校验码对应值
+	verifyCodeList := []string{"1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2"}
+
+	// 根据前17位计算校验码
+	var total int32;
+	for i := 0; i < 16; i++ {
+		tmp := idNumBase[i : i+1]
+		tmpNum, _ := strconv.ParseInt(tmp, 10, 32)
+		total += int32(tmpNum) * factor[i]
+	}
+
+	tmp := idNumBase[16:]
+	tmpNum, _ := strconv.ParseInt(tmp, 10, 32)
+	total += int32(tmpNum) * factor[16]
+	// 取模
+	mod := total % 11
+	// 比较校验码
+	if strings.ToLower(verifyCode) == strings.ToLower(verifyCodeList[mod]) {
+		return true;
+	} else {
+		return false;
+	}
+}
